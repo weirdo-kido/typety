@@ -1,0 +1,306 @@
+	<!-- 
+	typety v0,8 | MIT License
+	Copyright (c) 2026 weirdo-kido
+
+	"Yakin tambah bloat?"
+	"Bebas, toh NO WARRANTY, lol."
+	"Gua cuma tes mode potrait di hp a20s gua 60 fps, bre."
+	"Lag at iphone? Hardware issue, lol."
+	"Kodenya kaga gua minify, bjir."
+	"Sengaja di license gua tulis panjang."
+	"Bloat juga kah komen gua? wqwq"
+	"Gua bebas juga donk, lol."
+	"Kodenya juga bebas kok." __φ(．．)
+	-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content, viewport-fit=cover">
+  <meta name="description" content="typety: Minimalist Typing for Potato Phone.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#121212">
+  <link rel="manifest" href="manifest.json">
+ <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org' viewBox='0 0 24 24' fill='%2300A329'%3E%3Cpath d='M2.01 21L23 12 2.01 3 2 10l15 2-15 2z'/%3E%3C/svg%3E">
+  <title>typety</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --primary: #00A329;
+      --text: #ccc;
+      --border: #333;
+      --lh: 24px;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    body, textarea, button, #msg {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight:425;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      width: 100%;
+      overflow: hidden;
+      max-width: 412px;
+      overscroll-behavior: none;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      will-change: transition;
+    }
+
+    #msg {
+      height: 24px;
+      font-size: 16px;
+      text-align: center;
+      transition: 0.3s;
+      overflow: hidden;
+    }
+
+    .input-wrapper {
+      position: relative;
+      padding: 10px 16px;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      border-top: 1px solid transparent;
+      border-radius: 24px;
+      padding-bottom: 12px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      /*overflow: hidden;*/
+      margin: 0 8px 8px 8px;
+      caret-color: var(--primary);
+      touch-action: manipulation;
+      /*contain: paint;*/
+    }
+
+  .input-wrapper:focus-within {
+    background: rgba(30, 30, 30, 0.60);
+    backdrop-filter: blur(8px) saturate(160%);
+    -webkit-backdrop-filter: blur(8px) saturate(160%);
+    border-color: rgba(0, 163, 41, 0.2);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  .input-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .input-wrapper:focus-within::before {
+    opacity: 1;
+  }
+
+    textarea {
+      flex: 1;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      outline: none;
+      font-size: 16px;
+      line-height: var(--lh);
+      padding: 12px 4px 12px 0;
+      resize: none;
+      height: 48px;
+      max-height: 144px;
+      scrollbar-width: none;
+      will-change: height;
+      user-select: text;
+      -webkit-user-select: text;
+      overflow-y: auto;
+      overscroll-behavior: none;
+    }
+
+  textarea::-webkit-scrollbar { display: none; }
+
+    #copyBtn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--bg);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.1s ease;
+    }
+
+    #copyBtn:active { transform: scale(0.85); }
+
+    #copyBtn span {
+      font-size: 22px;
+      transform: rotate(-45deg) translate(2px, -2px);
+      display: inline-block;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div id="msg" aria-live="polite" aria-atomic="false"></div>
+  </main>
+
+  <div class="input-wrapper">
+    <textarea 
+      id="autoWrap"
+      aria-label="Ketik pesan"      
+      placeholder="Ketik di sini, bre..."
+      spellcheck="false"
+      autocomplete="off"></textarea>
+    
+    <button id="copyBtn" aria-label="Salin pesan">
+      <span>&#10148;</span>
+    </button>
+  </div>
+
+  <script>
+    const area = document.getElementById('autoWrap');
+    const copyBtn = document.getElementById('copyBtn');
+    const msg = document.getElementById('msg');
+    
+    const MIN_H = 48;
+    const MAX_H = 144;
+    let lastH = MIN_H;
+  
+    function adjustHeight() {
+    const currentScroll = area.scrollTop;
+    
+    area.style.transition = 'none';
+    area.style.height = MIN_H + 'px'; 
+  
+    const currentH = Math.max(MIN_H, Math.min(area.scrollHeight, MAX_H));
+  
+    if (Math.abs(currentH - lastH) > 2) {
+      const isGrowing = currentH > lastH;
+      lastH = currentH;
+  
+      area.style.transition = 'height 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      area.style.height = currentH + 'px';
+      //area.style.overflowY = area.scrollHeight > MAX_H ? 'auto' : 'hidden';
+  
+      if (isGrowing) {
+        area.style.transform = 'scale(1.01)';
+        setTimeout(() => area.style.transform = 'scale(1)', 100);
+      }
+    } else {
+      area.style.height = lastH + 'px';
+    }
+  
+    if (area.scrollHeight > MAX_H) {
+      area.scrollTop = area.scrollHeight;
+    } else {
+      area.scrollTop = currentScroll;
+    }
+  }
+  
+    area.addEventListener('input', adjustHeight);
+  
+    area.addEventListener('focus', () => {
+      setTimeout(() => {
+        area.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        if (area.value) adjustHeight();
+      }, 300);
+    });
+  
+    let pressTimer;
+  
+    copyBtn.addEventListener('mousedown', startPress);
+    copyBtn.addEventListener('touchstart', startPress, {passive: true});
+  
+    copyBtn.addEventListener('mouseup', cancelPress);
+    copyBtn.addEventListener('touchend', cancelPress);
+  
+    function startPress(e) {
+      if (e.cancelable) e.preventDefault();
+      copyBtn.style.transform = "scale(0.8)"; 
+    
+    pressTimer = setTimeout(() => {
+      area.value = "";
+      adjustHeight();
+      showMsg("( >_<) Bersih, Bre!", "#ccc");
+      if (window.navigator.vibrate) window.navigator.vibrate([20, 60, 20]);    
+      copyBtn.style.transform = "scale(1)";
+      pressTimer = null;
+    }, 450); 
+  }
+  
+    function cancelPress(e) {
+      if (pressTimer) {
+        clearTimeout(pressTimer);
+        copyBtn.style.transform = "scale(1)";
+        handleCopy(); 
+      }
+    }
+    
+    let isCopying = false;
+    
+    async function handleCopy() {
+      if (isCopying) return;
+    
+      const val = area.value.trim();
+      if (!val) return showMsg("( -_ -) Kosong, Bre", "#999");
+    
+      isCopying = true;
+      try {
+        await navigator.clipboard.writeText(val);
+        area.value = "";
+        area.style.height = MIN_H + 'px';
+        lastH = MIN_H;
+        area.blur();
+        showMsg("( ・∀・ ) Sukses Tersalin!");
+        if (window.navigator.vibrate) window.navigator.vibrate(30);
+      } catch (err) {
+        showMsg("( ╯°□°)╯ Gagal!", "#ccc");
+      } finally {
+        isCopying = false;
+      }
+    }
+  
+    function showMsg(text, color = "#00A329") {
+      const update = () => { msg.innerText = text; msg.style.color = color; };
+      document.startViewTransition ? document.startViewTransition(update) : update();
+      setTimeout(() => {
+        const clear = () => msg.innerText = "";
+        document.startViewTransition ? document.startViewTransition(clear) : clear();
+      }, 2500);
+    }
+  
+    window.addEventListener('load', () => {
+      area.value ? adjustHeight() : area.style.height = MIN_H + 'px';
+    });
+  </script>
+</body>
+</html>
