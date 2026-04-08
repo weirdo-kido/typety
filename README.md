@@ -1,4 +1,4 @@
-# typety  
+# [typety](https://weirdo-kido.github.io/typety/) 
 
 chat to your clipboard.
 
